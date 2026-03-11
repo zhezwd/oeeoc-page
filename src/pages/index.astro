@@ -1,0 +1,557 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+// 获取当前时间状态
+function getTimeStatus() {
+  const hour = new Date().getHours();
+  if (hour < 6) return { text: '夜深了', emoji: '🌙' };
+  if (hour < 9) return { text: '早安', emoji: '🌅' };
+  if (hour < 12) return { text: '上午好', emoji: '☀️' };
+  if (hour < 14) return { text: '午安', emoji: '🌤️' };
+  if (hour < 18) return { text: '下午好', emoji: '🌇' };
+  return { text: '晚上好', emoji: '🌃' };
+}
+
+const timeStatus = getTimeStatus();
+---
+
+<BaseLayout 
+  title="oeeoc"
+  description="oeeoc的个人空间 - 记录思考与生活"
+  noFooter={true}
+>
+  <div class="home-container">
+    <!-- 背景渐变 -->
+    <div class="bg-gradient"></div>
+    
+    <!-- 头像（左上） -->
+    <div class="avatar-container" data-parallax="0.02">
+      <div class="avatar-wrapper">
+        <img 
+          src="/images/avatar.jpg" 
+          alt="oeeoc" 
+          class="avatar"
+          onerror="this.src='/images/avatar-placeholder.svg'"
+        >
+        <div class="avatar-glow"></div>
+      </div>
+    </div>
+    
+    <!-- 简介（居中偏上） -->
+    <div class="intro-container" data-parallax="0.05">
+      <div class="intro-content">
+        <p class="time-status text-secondary">
+          <span class="time-emoji">{timeStatus.emoji}</span>
+          <span class="time-text">{timeStatus.text}</span>
+        </p>
+        <h1 class="intro-text">
+          这里是 <span class="highlight">oeeoc</span> 的空间<br>
+          记录思考，分享生活
+        </h1>
+        <p class="intro-subtitle text-secondary">
+          偶尔写点文字，偶尔拍点照片
+        </p>
+      </div>
+    </div>
+    
+    <!-- 名字（右下） -->
+    <div class="name-container" data-parallax="0.03">
+      <h2 class="name">oeeoc</h2>
+      <p class="tagline text-tertiary">思考者 / 创作者</p>
+    </div>
+    
+    <!-- 联系方式（底部细线） -->
+    <div class="contact-container" data-parallax="0.01">
+      <div class="contact-line">
+        <div class="contact-content">
+          <a href="mailto:hello@oeeoc.me" class="contact-link">
+            <span class="contact-icon">✉</span>
+            <span class="contact-text">hello@oeeoc.me</span>
+          </a>
+          <a href="https://github.com/oeeoc" target="_blank" rel="noopener" class="contact-link">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+            </span>
+            <span class="contact-text">GitHub</span>
+          </a>
+          <a href="https://twitter.com/oeeoc" target="_blank" rel="noopener" class="contact-link">
+            <span class="contact-icon">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+              </svg>
+            </span>
+            <span class="contact-text">Twitter</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 文章入口（变形圆） -->
+    <a href="/articles" class="article-entry magnetic" data-parallax="0.08">
+      <div class="entry-blob breathe">
+        <span class="entry-text">文</span>
+      </div>
+      <span class="entry-hint">文章</span>
+    </a>
+  </div>
+  
+  <style>
+    .home-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      padding: var(--space-3xl);
+    }
+    
+    /* 背景渐变 */
+    .bg-gradient {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(
+        ellipse at 30% 20%,
+        rgba(0, 122, 255, 0.08) 0%,
+        transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 70% 80%,
+        rgba(90, 200, 250, 0.05) 0%,
+        transparent 50%
+      );
+      pointer-events: none;
+      z-index: -1;
+    }
+    
+    /* 头像 */
+    .avatar-container {
+      position: absolute;
+      top: var(--space-3xl);
+      left: var(--space-3xl);
+      z-index: 10;
+    }
+    
+    .avatar-wrapper {
+      position: relative;
+      width: 80px;
+      height: 80px;
+    }
+    
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--glass-border);
+      transition: transform 0.3s var(--ease-spring);
+    }
+    
+    .avatar-wrapper:hover .avatar {
+      transform: scale(1.05);
+    }
+    
+    .avatar-glow {
+      position: absolute;
+      top: -8px;
+      left: -8px;
+      right: -8px;
+      bottom: -8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      opacity: 0.2;
+      filter: blur(20px);
+      z-index: -1;
+      transition: opacity 0.3s ease;
+    }
+    
+    .avatar-wrapper:hover .avatar-glow {
+      opacity: 0.4;
+    }
+    
+    /* 简介 */
+    .intro-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -60%);
+      text-align: center;
+      z-index: 10;
+      max-width: 600px;
+      width: 90%;
+    }
+    
+    .intro-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-lg);
+    }
+    
+    .time-status {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+    
+    .time-emoji {
+      font-size: 1.2em;
+    }
+    
+    .intro-text {
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      font-weight: 500;
+      line-height: 1.4;
+      letter-spacing: -0.02em;
+    }
+    
+    .highlight {
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .intro-subtitle {
+      font-size: 1rem;
+      opacity: 0.7;
+    }
+    
+    /* 名字 */
+    .name-container {
+      position: absolute;
+      bottom: var(--space-3xl);
+      right: var(--space-3xl);
+      text-align: right;
+      z-index: 10;
+    }
+    
+    .name {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .tagline {
+      margin-top: var(--space-sm);
+      font-size: 0.875rem;
+    }
+    
+    /* 联系方式 */
+    .contact-container {
+      position: absolute;
+      bottom: var(--space-3xl);
+      left: var(--space-3xl);
+      z-index: 10;
+    }
+    
+    .contact-line {
+      position: relative;
+      padding-top: var(--space-md);
+    }
+    
+    .contact-line::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 40px;
+      height: 1px;
+      background: var(--glass-border);
+      transition: width 0.4s var(--ease-smooth);
+    }
+    
+    .contact-container:hover .contact-line::before {
+      width: 100%;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    
+    .contact-content {
+      display: flex;
+      gap: var(--space-lg);
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+    
+    .contact-container:hover .contact-content {
+      opacity: 1;
+    }
+    
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      transition: color 0.2s ease;
+    }
+    
+    .contact-link:hover {
+      color: var(--text-primary);
+    }
+    
+    .contact-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* 文章入口 */
+    .article-entry {
+      position: absolute;
+      top: var(--space-3xl);
+      right: var(--space-3xl);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-sm);
+      z-index: 10;
+      text-decoration: none;
+    }
+    
+    .entry-blob {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent), var(--accent-light));
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .entry-blob::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.2));
+    }
+    
+    .entry-text {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .entry-hint {
+      font-size: 0.75rem;
+      color: var(--text-tertiary);
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.3s var(--ease-smooth);
+    }
+    
+    .article-entry:hover .entry-hint {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* 磁吸效果 */
+    .magnetic {
+      transition: transform 0.3s var(--ease-spring);
+    }
+    
+    /* 手机端适配 */
+    @media (max-width: 768px) {
+      .home-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--space-xl);
+        gap: var(--space-2xl);
+      }
+      
+      .avatar-container {
+        position: static;
+        order: 1;
+      }
+      
+      .avatar-wrapper {
+        width: 100px;
+        height: 100px;
+      }
+      
+      .intro-container {
+        position: static;
+        transform: none;
+        order: 2;
+      }
+      
+      .name-container {
+        position: static;
+        text-align: center;
+        order: 3;
+      }
+      
+      .contact-container {
+        position: static;
+        order: 4;
+      }
+      
+      .contact-line::before {
+        width: 100%;
+      }
+      
+      .contact-content {
+        opacity: 1;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .article-entry {
+        position: static;
+        order: 5;
+      }
+      
+      .entry-blob {
+        border-radius: var(--radius-lg) !important;
+        animation: none;
+      }
+      
+      .entry-hint {
+        opacity: 1;
+        transform: none;
+      }
+      
+      .bg-gradient {
+        opacity: 0.5;
+      }
+    }
+    
+    /* 平板适配 */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .home-container {
+        padding: var(--space-2xl);
+      }
+      
+      .avatar-wrapper {
+        width: 70px;
+        height: 70px;
+      }
+    }
+    
+    /* 减少动效 */
+    @media (prefers-reduced-motion: reduce) {
+      .breathe {
+        animation: none;
+        border-radius: 50% !important;
+      }
+      
+      .entry-blob {
+        border-radius: var(--radius-lg) !important;
+      }
+    }
+  </style>
+  
+  <script>
+    // 微视差效果
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const parallaxElements = document.querySelectorAll('[data-parallax]');
+      let ticking = false;
+      
+      document.addEventListener('mousemove', (e) => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const moveX = (e.clientX - centerX) / centerX;
+            const moveY = (e.clientY - centerY) / centerY;
+            
+            parallaxElements.forEach(el => {
+              const intensity = parseFloat(el.dataset.parallax) || 0.05;
+              const x = moveX * intensity * 20;
+              const y = moveY * intensity * 20;
+              el.style.transform = `translate(${x}px, ${y}px)`;
+            });
+            
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+    
+    // 磁吸效果
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const magneticElements = document.querySelectorAll('.magnetic');
+      
+      magneticElements.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+          const rect = el.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          const deltaX = e.clientX - centerX;
+          const deltaY = e.clientY - centerY;
+          
+          // 50px范围，0.3强度
+          const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+          const maxDistance = 50;
+          
+          if (distance < maxDistance) {
+            const strength = 0.3;
+            const x = deltaX * strength;
+            const y = deltaY * strength;
+            el.style.transform = `translate(${x}px, ${y}px)`;
+          }
+        });
+        
+        el.addEventListener('mouseleave', () => {
+          el.style.transform = 'translate(0, 0)';
+        });
+      });
+    }
+    
+    // GSAP入场动画
+    if (typeof gsap !== 'undefined') {
+      gsap.registerPlugin();
+      
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      
+      tl.from('.avatar-container', {
+        opacity: 0,
+        scale: 0.8,
+        duration: 0.8,
+        delay: 0.2
+      })
+      .from('.intro-container', {
+        opacity: 0,
+        y: 30,
+        duration: 0.8
+      }, '-=0.5')
+      .from('.name-container', {
+        opacity: 0,
+        y: 20,
+        duration: 0.6
+      }, '-=0.4')
+      .from('.contact-container', {
+        opacity: 0,
+        y: 20,
+        duration: 0.6
+      }, '-=0.3')
+      .from('.article-entry', {
+        opacity: 0,
+        scale: 0.5,
+        duration: 0.8,
+        ease: 'back.out(1.7)'
+      }, '-=0.4');
+    }
+  </script>
+</BaseLayout>

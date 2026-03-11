@@ -1,0 +1,767 @@
+---
+// 后台管理页面 - 极简纯白风格
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>后台管理 - oeeoc</title>
+  
+  <!-- Auth0 -->
+  <script src="https://cdn.auth0.com/js/auth0/9.24.0/auth0.min.js"></script>
+  
+  <!-- Marked -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <style>
+    /* 极简纯白风格 */
+    :root {
+      --bg-primary: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --bg-tertiary: #fafafa;
+      --text-primary: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --text-tertiary: #86868b;
+      --border: #d2d2d7;
+      --accent: #007aff;
+      --accent-hover: #0056b3;
+      --error: #ff3b30;
+      --success: #34c759;
+      
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      
+      --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'PingFang SC', sans-serif;
+      --font-mono: 'SF Mono', 'Monaco', 'Fira Code', monospace;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      font-size: 16px;
+    }
+    
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    
+    /* 登录页面 */
+    .login-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: var(--space-xl);
+    }
+    
+    .login-logo {
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: var(--space-lg);
+      letter-spacing: -0.02em;
+    }
+    
+    .login-form {
+      width: 100%;
+      max-width: 360px;
+    }
+    
+    .form-group {
+      margin-bottom: var(--space-md);
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xs);
+    }
+    
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.2s ease;
+    }
+    
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+    
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+    
+    .btn-danger {
+      background: var(--error);
+      color: white;
+    }
+    
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.875rem;
+      width: auto;
+    }
+    
+    /* 管理后台 */
+    .admin-page {
+      display: none;
+      min-height: 100vh;
+    }
+    
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) var(--space-xl);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-primary);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .admin-logo {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    
+    .user-name {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .admin-main {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: calc(100vh - 61px);
+    }
+    
+    .admin-sidebar {
+      border-right: 1px solid var(--border);
+      padding: var(--space-md);
+    }
+    
+    .sidebar-nav {
+      list-style: none;
+    }
+    
+    .sidebar-item {
+      margin-bottom: var(--space-xs);
+    }
+    
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    
+    .sidebar-link:hover,
+    .sidebar-link.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+    
+    .sidebar-icon {
+      width: 18px;
+      height: 18px;
+    }
+    
+    .admin-content {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+    
+    /* 编辑器 */
+    .editor-container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .editor-header {
+      margin-bottom: var(--space-lg);
+    }
+    
+    .editor-title-input {
+      width: 100%;
+      font-size: 1.5rem;
+      font-weight: 600;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+    }
+    
+    .editor-title-input:focus {
+      outline: none;
+    }
+    
+    .editor-title-input::placeholder {
+      color: var(--text-tertiary);
+    }
+    
+    .editor-meta {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+    }
+    
+    .meta-input {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      background: var(--bg-primary);
+    }
+    
+    .meta-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .editor-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      min-height: 500px;
+    }
+    
+    .editor-input,
+    .editor-preview {
+      padding: var(--space-lg);
+      overflow-y: auto;
+    }
+    
+    .editor-input {
+      border-right: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      resize: none;
+      border: none;
+      outline: none;
+      background: var(--bg-tertiary);
+    }
+    
+    .editor-preview {
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      background: var(--bg-primary);
+    }
+    
+    .editor-preview h1,
+    .editor-preview h2,
+    .editor-preview h3 {
+      margin: var(--space-lg) 0 var(--space-md);
+      font-weight: 600;
+    }
+    
+    .editor-preview p {
+      margin-bottom: var(--space-md);
+    }
+    
+    .editor-preview code {
+      font-family: var(--font-mono);
+      background: var(--bg-secondary);
+      padding: 2px 6px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875em;
+    }
+    
+    .editor-preview pre {
+      background: var(--bg-secondary);
+      padding: var(--space-md);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+    }
+    
+    .editor-preview pre code {
+      background: none;
+      padding: 0;
+    }
+    
+    .editor-actions {
+      display: flex;
+      gap: var(--space-md);
+      margin-top: var(--space-lg);
+      justify-content: flex-end;
+    }
+    
+    /* 文章列表 */
+    .articles-list {
+      list-style: none;
+    }
+    
+    .article-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .article-item:hover {
+      background: var(--bg-secondary);
+    }
+    
+    .article-info h3 {
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: var(--space-xs);
+    }
+    
+    .article-info p {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+    
+    .article-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+    
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-primary);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 0.875rem;
+      z-index: 1000;
+      animation: slide-up 0.3s ease;
+    }
+    
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+    
+    /* 隐藏 */
+    .hidden {
+      display: none !important;
+    }
+    
+    /* 手机端适配 */
+    @media (max-width: 768px) {
+      .admin-main {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-sidebar {
+        display: none;
+      }
+      
+      .editor-wrapper {
+        grid-template-columns: 1fr;
+      }
+      
+      .editor-input {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        min-height: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 登录页面 -->
+  <div id="loginPage" class="login-page">
+    <h1 class="login-logo">oeeoc</h1>
+    <div class="login-form">
+      <div class="form-group">
+        <label class="form-label">邮箱</label>
+        <input type="email" id="loginEmail" class="form-input" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">密码</label>
+        <input type="password" id="loginPassword" class="form-input" placeholder="••••••••">
+      </div>
+      <button id="loginBtn" class="btn btn-primary">登录</button>
+    </div>
+  </div>
+  
+  <!-- 管理后台 -->
+  <div id="adminPage" class="admin-page">
+    <header class="admin-header">
+      <span class="admin-logo">oeeoc</span>
+      <div class="admin-user">
+        <span id="userName" class="user-name"></span>
+        <button id="logoutBtn" class="btn btn-sm btn-secondary">退出</button>
+      </div>
+    </header>
+    
+    <main class="admin-main">
+      <aside class="admin-sidebar">
+        <nav>
+          <ul class="sidebar-nav">
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link active" data-view="editor">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                写文章
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="#" class="sidebar-link" data-view="articles">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                  <line x1="16" y1="13" x2="8" y2="13"/>
+                  <line x1="16" y1="17" x2="8" y2="17"/>
+                  <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                文章列表
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a href="/" class="sidebar-link">
+                <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                  <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+                返回首页
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+      
+      <section class="admin-content">
+        <!-- 编辑器视图 -->
+        <div id="editorView" class="editor-container">
+          <div class="editor-header">
+            <input type="text" id="articleTitle" class="editor-title-input" placeholder="文章标题">
+            <div class="editor-meta">
+              <input type="text" id="articleDescription" class="meta-input" placeholder="描述" style="flex: 1;">
+              <input type="text" id="articleTags" class="meta-input" placeholder="标签，用逗号分隔">
+              <input type="text" id="articleImage" class="meta-input" placeholder="封面图URL">
+            </div>
+          </div>
+          
+          <div class="editor-wrapper">
+            <textarea id="markdownInput" class="editor-input" placeholder="# 开始写作...
+
+支持 Markdown 语法
+
+## 标题
+**粗体** *斜体* `代码`
+
+- 列表项
+- 列表项
+
+[链接](url)
+
+![图片](url)
+
+```代码块```"></textarea>
+            <div id="markdownPreview" class="editor-preview"></div>
+          </div>
+          
+          <div class="editor-actions">
+            <button id="saveDraftBtn" class="btn btn-sm btn-secondary">保存草稿</button>
+            <button id="publishBtn" class="btn btn-sm btn-primary">发布文章</button>
+          </div>
+        </div>
+        
+        <!-- 文章列表视图 -->
+        <div id="articlesView" class="hidden">
+          <h2 style="margin-bottom: var(--space-lg);">文章列表</h2>
+          <ul id="articlesList" class="articles-list">
+            <!-- 动态生成 -->
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script>
+    // 简化的认证（实际使用 Auth0/Netlify Identity）
+    // 这里使用 localStorage 模拟，生产环境请替换为真实认证
+    
+    const AUTH_KEY = 'oeeoc_admin_auth';
+    
+    // DOM 元素
+    const loginPage = document.getElementById('loginPage');
+    const adminPage = document.getElementById('adminPage');
+    const loginBtn = document.getElementById('loginBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const loginEmail = document.getElementById('loginEmail');
+    const loginPassword = document.getElementById('loginPassword');
+    const userName = document.getElementById('userName');
+    
+    // 检查登录状态
+    function checkAuth() {
+      const auth = localStorage.getItem(AUTH_KEY);
+      if (auth) {
+        const user = JSON.parse(auth);
+        showAdmin(user);
+      } else {
+        showLogin();
+      }
+    }
+    
+    function showLogin() {
+      loginPage.style.display = 'flex';
+      adminPage.style.display = 'none';
+    }
+    
+    function showAdmin(user) {
+      loginPage.style.display = 'none';
+      adminPage.style.display = 'block';
+      userName.textContent = user.email || '管理员';
+    }
+    
+    // 登录
+    loginBtn?.addEventListener('click', () => {
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+      
+      // 简单验证（实际使用 Auth0）
+      if (email && password) {
+        localStorage.setItem(AUTH_KEY, JSON.stringify({ email }));
+        showAdmin({ email });
+        showToast('登录成功');
+      } else {
+        showToast('请填写邮箱和密码');
+      }
+    });
+    
+    // 退出
+    logoutBtn?.addEventListener('click', () => {
+      localStorage.removeItem(AUTH_KEY);
+      showLogin();
+      showToast('已退出');
+    });
+    
+    // 视图切换
+    const sidebarLinks = document.querySelectorAll('.sidebar-link[data-view]');
+    const editorView = document.getElementById('editorView');
+    const articlesView = document.getElementById('articlesView');
+    
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const view = link.dataset.view;
+        
+        sidebarLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        
+        if (view === 'editor') {
+          editorView.classList.remove('hidden');
+          articlesView.classList.add('hidden');
+        } else if (view === 'articles') {
+          editorView.classList.add('hidden');
+          articlesView.classList.remove('hidden');
+          loadArticlesList();
+        }
+      });
+    });
+    
+    // Markdown 编辑器
+    const markdownInput = document.getElementById('markdownInput');
+    const markdownPreview = document.getElementById('markdownPreview');
+    
+    function updatePreview() {
+      const markdown = markdownInput.value;
+      markdownPreview.innerHTML = marked.parse(markdown);
+    }
+    
+    markdownInput?.addEventListener('input', updatePreview);
+    updatePreview();
+    
+    // 发布文章
+    const publishBtn = document.getElementById('publishBtn');
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    const articleTitle = document.getElementById('articleTitle');
+    const articleDescription = document.getElementById('articleDescription');
+    const articleTags = document.getElementById('articleTags');
+    const articleImage = document.getElementById('articleImage');
+    
+    function generateArticleMarkdown() {
+      const title = articleTitle.value || '未命名';
+      const description = articleDescription.value || '';
+      const tags = articleTags.value.split(',').map(t => t.trim()).filter(Boolean);
+      const heroImage = articleImage.value || '';
+      const content = markdownInput.value;
+      
+      const frontmatter = `---
+title: "${title}"
+description: "${description}"
+pubDate: ${new Date().toISOString()}
+${tags.length ? `tags: [${tags.map(t => `"${t}"`).join(', ')}]` : ''}
+${heroImage ? `heroImage: "${heroImage}"` : ''}
+---
+
+`;
+      
+      return frontmatter + content;
+    }
+    
+    publishBtn?.addEventListener('click', () => {
+      const markdown = generateArticleMarkdown();
+      
+      // 创建下载
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${articleTitle.value || 'article'}.md`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showToast('文章已下载，请提交到 Git 仓库');
+      
+      // 清空表单
+      articleTitle.value = '';
+      articleDescription.value = '';
+      articleTags.value = '';
+      articleImage.value = '';
+      markdownInput.value = '';
+      updatePreview();
+    });
+    
+    saveDraftBtn?.addEventListener('click', () => {
+      const draft = {
+        title: articleTitle.value,
+        description: articleDescription.value,
+        tags: articleTags.value,
+        heroImage: articleImage.value,
+        content: markdownInput.value,
+        savedAt: new Date().toISOString()
+      };
+      
+      localStorage.setItem('oeeoc_draft', JSON.stringify(draft));
+      showToast('草稿已保存');
+    });
+    
+    // 加载草稿
+    function loadDraft() {
+      const draft = localStorage.getItem('oeeoc_draft');
+      if (draft) {
+        const data = JSON.parse(draft);
+        articleTitle.value = data.title || '';
+        articleDescription.value = data.description || '';
+        articleTags.value = data.tags || '';
+        articleImage.value = data.heroImage || '';
+        markdownInput.value = data.content || '';
+        updatePreview();
+      }
+    }
+    
+    // 加载文章列表（模拟）
+    function loadArticlesList() {
+      const list = document.getElementById('articlesList');
+      list.innerHTML = `
+        <li class="article-item">
+          <div class="article-info">
+            <h3>示例文章</h3>
+            <p>2024年1月1日 · 暂无描述</p>
+          </div>
+          <div class="article-actions">
+            <button class="btn btn-sm btn-secondary">编辑</button>
+            <button class="btn btn-sm btn-danger">删除</button>
+          </div>
+        </li>
+      `;
+    }
+    
+    // Toast
+    function showToast(message) {
+      const existing = document.querySelector('.toast');
+      if (existing) existing.remove();
+      
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => toast.remove(), 3000);
+    }
+    
+    // 初始化
+    checkAuth();
+    loadDraft();
+  </script>
+</body>
+</html>

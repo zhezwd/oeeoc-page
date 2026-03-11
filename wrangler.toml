@@ -1,0 +1,11 @@
+# Cloudflare Pages 配置
+# 此文件用于 Cloudflare Pages 部署
+
+name = "oeeoc"
+compatibility_date = "2024-03-07"
+
+[site]
+bucket = "./dist"
+
+[build]
+command = "npm run build"
